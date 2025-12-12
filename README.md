@@ -129,3 +129,37 @@ Ao limitar a disputa a 4 participantes ativos pelo **Princípio da Casa dos Pomb
 
 <img width="503" height="140" alt="image" src="https://github.com/user-attachments/assets/f7b729ad-2ee9-466c-87a2-61448f90a517" />
 
+
+# Tarefa 4: Solução com Monitor e Garantia de Fairness
+
+## Visão Geral
+Esta implementação utiliza o padrão de projeto **Monitor** para centralizar o controle de acesso aos recursos (garfos). A classe `Mesa` encapsula todo o estado do sistema e utiliza métodos `synchronized` junto com `wait()` e `notifyAll()`.
+
+Para atender ao requisito de **Fairness (Justiça)** e **Prioridade**, implementamos uma fila lógica de pedidos dentro do monitor.
+
+## Como o Monitor Garante Fairness
+A inovação desta implementação está no método `podeComer(int id)`. Diferente da implementação padrão (Tanenbaum) que apenas olha se os vizinhos estão comendo, nossa solução olha também para a **intenção**.
+
+1.  **Fila de Chegada:** Quando um filósofo sente fome, ele entra em uma `Queue<Integer>`.
+2.  **A Regra de Ouro:** Um filósofo só pode comer se:
+    * Seus vizinhos **não estão comendo**.
+    * **E** nenhum de seus vizinhos está na fila de espera **à sua frente**.
+3.  **Resultado:** Isso impede a "conspiração dos vizinhos", onde o Filósofo 1 e 3 poderiam alternar turnos indefinidamente, deixando o Filósofo 2 (que está no meio) esperando para sempre. Se o Filósofo 2 pediu primeiro, o Filósofo 1 e 3 serão obrigados a esperar o 2 comer, mesmo que os garfos estejam livres para eles naquele instante.
+
+## Prevenção de Deadlock e Starvation
+* **Deadlock:** É prevenido porque a aquisição dos garfos é atômica dentro do Monitor (`synchronized`). O filósofo nunca segura um garfo enquanto espera pelo outro; ele ou pega os dois (muda estado para COMENDO) ou não pega nenhum e dorme (`wait`). Não há "Hold and Wait".
+* **Starvation:** É prevenido pela Fila FIFO. É garantido que, eventualmente, qualquer filósofo chegará ao topo da prioridade em relação aos seus vizinhos e será servido.
+
+## Trade-offs e Comparação
+| Característica | Tarefa 2 (Hierarquia) | Tarefa 3 (Semáforo) | Tarefa 4 (Monitor + Fila) |
+| :--- | :--- | :--- | :--- |
+| **Complexidade** | Baixa | Média | Alta (Lógica de fila customizada) |
+| **Fairness** | Aleatória (Sem garantia) | Boa (Semáforo FIFO) | **Perfeita** (Garantia determinística) |
+| **Throughput** | Alto | Médio/Alto | Médio (Overhead de verificação da fila) |
+
+**Conclusão:** A solução com Monitor é a mais robusta para sistemas críticos onde a justiça é obrigatória, embora introduza um pouco mais de complexidade de código e processamento (overhead de percorrer a fila e notifyAll).
+
+## estatística da execução
+
+<img width="594" height="212" alt="image" src="https://github.com/user-attachments/assets/d4a5ffd1-af77-4884-a737-03c5976b3109" />
+

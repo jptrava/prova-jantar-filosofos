@@ -16,7 +16,6 @@ Os testes foram executados em um ambiente Java multithreaded sob as seguintes co
 * **Carga de Trabalho:**
     * Tempo de Pensar: Aleatório entre 1s e 3s.
     * Tempo de Comer: Aleatório entre 1s e 3s.
-    * Média esperada por ciclo: ~4 segundos (sem contar tempo de espera).
 * **Métricas Coletadas:** Contagem total de refeições e distribuição individual por filósofo.
 
 ## 3. Resultados Experimentais
@@ -32,7 +31,6 @@ Abaixo, apresentamos os dados coletados durante as execuções.
 | **Média por Filósofo** | 54.8 | 39.2 | 39.0 |
 | **Amplitude (Max - Min)** | 9 (51 a 60) | **2 (38 a 40)** | **2 (38 a 40)** |
 | **Desvio Padrão** | 3.12 | 0.75 | 0.63 |
-| **Utilização de Recursos** | Alta | Média | Média |
 
 ### 3.2. Detalhamento dos Dados
 
@@ -47,33 +45,29 @@ Abaixo, apresentamos os dados coletados durante as execuções.
 * **Semáforo (T3):** Previne deadlock limitando a capacidade. Ao permitir apenas 4 filósofos na disputa por 5 garfos, garante-se matematicamente (Princípio da Casa dos Pombos) que pelo menos um terá acesso a dois garfos.
 * **Monitor (T4):** Previne deadlock pela atomicidade. O estado do filósofo é gerenciado centralmente; ele não segura um recurso enquanto espera por outro (elimina "Hold and Wait").
 
-### 4.2. Performance (Throughput) vs. Justiça (Fairness)
-Os dados revelam um trade-off claro entre velocidade e organização:
+### 4.2. Prevenção de Starvation (Inanição)
+* **Hierarquia (T2): Não previne Starvation garantidamente.** Embora improvável com o agendador moderno do Java, é teoricamente possível que threads vizinhas "conspirem" e sejam sempre mais rápidas, deixando um filósofo específico esperando indefinidamente.
+* **Semáforo (T3): Prevenção Parcial.** O semáforo do Java não garante a ordem de atendimento por padrão (Fairness não garantido). Um filósofo poderia ficar preso na fila do semáforo enquanto outros furam a fila, embora a limitação de capacidade reduza esse risco.
+* **Monitor (T4): Prevenção Total e Determinística.** Esta é a única solução que implementou uma **Fila de Prioridade (FIFO)** explícita. O método `podeComer()` verifica se há vizinhos na fila de espera que chegaram antes. Isso garante matematicamente que todo pedido será eventualmente atendido.
 
-* **A Tarefa 2 foi a mais rápida (274 refeições).**
-    * *Por quê?* Ela permite comportamento "ganancioso". Se os garfos estão livres, o filósofo pega. Não há overhead de verificação de filas ou semáforos globais.
-    * *Custo:* Menor justiça. Um par de filósofos rápidos pode comer mais vezes consecutivas.
-
+### 4.3. Performance (Throughput) vs. Justiça (Fairness)
+Os dados revelam um trade-off claro:
+* **A Tarefa 2 foi a mais rápida (274 refeições).** Ela permite comportamento "ganancioso". Se os garfos estão livres, o filósofo pega, sem overhead de filas.
 * **As Tarefas 3 e 4 foram mais lentas (~195 refeições).**
-    * *Por quê T3 é mais lenta?* Limitação artificial. Mesmo que os garfos 0 e 1 estejam livres, se houver 4 pessoas comendo em outros lugares da mesa, o 5º filósofo é bloqueado desnecessariamente.
-    * *Por quê T4 é mais lenta?* Burocracia da justiça. O monitor obriga um filósofo a esperar se o vizinho pediu primeiro, mesmo que os garfos estejam livres agora. O tempo gasto gerenciando a fila (`Queue`) e o overhead de `notifyAll()` impactam a velocidade.
+    * *T3:* Perde performance pela limitação artificial (o 5º filósofo é bloqueado mesmo se garfos estiverem livres).
+    * *T4:* Perde performance pela burocracia da justiça (um filósofo espera se o vizinho pediu primeiro).
 
-### 4.3. Complexidade de Implementação
-1.  **Baixa - Tarefa 2:** Mudança trivial na lógica de inicialização (`if/else`). Código limpo e de fácil manutenção.
-2.  **Média - Tarefa 3:** Requer o gerenciamento de um objeto `Semaphore` externo e blocos `try/finally` para garantir a liberação (`release`).
-3.  **Alta - Tarefa 4:** A mais complexa. Exige uma classe `Mesa` dedicada, gerenciamento manual de estados (`WAITING`, `EATING`), uso correto de `synchronized`, `wait`, `notifyAll` e uma estrutura de dados (`Queue`) para garantir a ordem.
+### 4.4. Complexidade de Implementação
+1.  **Baixa - Tarefa 2:** Mudança trivial na lógica (`if/else`). Código limpo.
+2.  **Média - Tarefa 3:** Requer objeto `Semaphore` externo.
+3.  **Alta - Tarefa 4:** Exige classe `Mesa` dedicada, gestão manual de estados, `synchronized`, `wait/notify` e estrutura de dados (`Queue`).
 
 ## 5. Conclusão
 
 Com base nos dados coletados e na análise teórica, concluímos:
 
-1.  **Vencedor em Performance: Tarefa 2 (Hierarquia).**
-    É a solução ideal para sistemas onde a produtividade máxima é o objetivo e pequenas desigualdades de serviço são toleráveis. É a implementação mais leve para a CPU.
-
-2.  **Vencedor em Equilíbrio: Tarefa 3 (Semáforo).**
-    Oferece uma justiça excelente (amplitude de apenas 2 refeições) com uma complexidade de código razoável. A perda de performance é o preço pago pela estabilidade garantida.
-
-3.  **Vencedor em Determinismo: Tarefa 4 (Monitor).**
-    Embora tenha performance similar à Tarefa 3, é a única que oferece garantias teóricas contra *starvation* através da fila de prioridade. É recomendada para sistemas de tempo real ou missão crítica onde a previsibilidade é mais importante que a velocidade bruta.
+1.  **Vencedor em Performance: Tarefa 2 (Hierarquia).** Ideal para sistemas onde a produtividade máxima é o objetivo e pequenas desigualdades são toleráveis. É a implementação mais leve para a CPU.
+2.  **Vencedor em Equilíbrio: Tarefa 3 (Semáforo).** Oferece justiça excelente com complexidade razoável.
+3.  **Vencedor em Determinismo: Tarefa 4 (Monitor).** Embora tenha performance similar à Tarefa 3, é a única que oferece garantias teóricas contra *starvation* via fila de prioridade. Recomendada para sistemas de tempo real ou missão crítica.
 
 **Recomendação Final:** Para a maioria das aplicações generalistas, a **Solução de Hierarquia (Tarefa 2)** é a mais indicada devido ao seu throughput superior (+40%) e baixa complexidade.

@@ -62,12 +62,17 @@ Os dados revelam um trade-off claro:
 2.  **Média - Tarefa 3:** Requer objeto `Semaphore` externo.
 3.  **Alta - Tarefa 4:** Exige classe `Mesa` dedicada, gestão manual de estados, `synchronized`, `wait/notify` e estrutura de dados (`Queue`).
 
+### 4.5. Uso de Recursos (Eficiência)
+* **Tarefa 2 (Hierarquia): Alta Eficiência.** Utiliza apenas bloqueios da JVM (baixo custo). Mantém os garfos ocupados o máximo de tempo possível (alta utilização de recursos físicos).
+* **Tarefa 3 (Semáforo): Eficiência Média.** Baixo consumo de memória, mas a utilização dos garfos é subotimizada devido ao bloqueio preventivo do 5º filósofo.
+* **Tarefa 4 (Monitor): Baixa Eficiência (Alto Overhead).** O uso de `notifyAll()` gera desperdício de CPU (acorda threads desnecessariamente) e a manutenção da Fila de Prioridade consome mais memória e ciclos de processamento.
+
 ## 5. Conclusão
 
 Com base nos dados coletados e na análise teórica, concluímos:
 
 1.  **Vencedor em Performance: Tarefa 2 (Hierarquia).** Ideal para sistemas onde a produtividade máxima é o objetivo e pequenas desigualdades são toleráveis. É a implementação mais leve para a CPU.
 2.  **Vencedor em Equilíbrio: Tarefa 3 (Semáforo).** Oferece justiça excelente com complexidade razoável.
-3.  **Vencedor em Determinismo: Tarefa 4 (Monitor).** Embora tenha performance similar à Tarefa 3, é a única que oferece garantias teóricas contra *starvation* via fila de prioridade. Recomendada para sistemas de tempo real ou missão crítica.
+3.  **Vencedor em Determinismo: Tarefa 4 (Monitor).** Embora tenha performance similar à Tarefa 3 e maior custo computacional, é a única que oferece garantias teóricas contra *starvation* via fila de prioridade. Recomendada para sistemas de tempo real ou missão crítica.
 
 **Recomendação Final:** Para a maioria das aplicações generalistas, a **Solução de Hierarquia (Tarefa 2)** é a mais indicada devido ao seu throughput superior (+40%) e baixa complexidade.

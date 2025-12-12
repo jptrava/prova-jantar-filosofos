@@ -127,7 +127,8 @@ Ao limitar a disputa a 4 participantes ativos pelo **Princípio da Casa dos Pomb
  
 ## estatística da execução
 
-<img width="503" height="140" alt="image" src="https://github.com/user-attachments/assets/f7b729ad-2ee9-466c-87a2-61448f90a517" />
+<img width="291" height="163" alt="image" src="https://github.com/user-attachments/assets/10b4dd07-3eac-42d5-bc02-ca26434e16ff" />
+
 
 
 # Tarefa 4: Solução com Monitor e Garantia de Fairness

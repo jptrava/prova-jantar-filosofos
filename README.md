@@ -121,11 +121,11 @@ Ao limitar a disputa a 4 participantes ativos pelo **Princípio da Casa dos Pomb
 * Esse filósofo pegará o segundo garfo, comerá e liberará seus recursos, garantindo que o ciclo de dependência nunca se feche.
 
 ## Comparação de Desempenho
-* **Tarefa 1 (Naive):** Falha catastrófica (Deadlock).
 * **Tarefa 2 (Hierarquia/Inversão):** Resolve o deadlock alterando a lógica de um filósofo específico.
 * **Tarefa 3 (Semáforo):** * **Vantagens:** Código simétrico (todos os filósofos executam a mesma lógica) e robustez matemática baseada em capacidade.
     * **Desvantagens:** Introduz um leve gargalo (overhead) pois um filósofo pode ser bloqueado pelo semáforo mesmo que seus vizinhos estejam pensando, caso outros pares distantes estejam comendo.
  
-** estatística
+## estatística da execução
+
 <img width="503" height="140" alt="image" src="https://github.com/user-attachments/assets/f7b729ad-2ee9-466c-87a2-61448f90a517" />
 

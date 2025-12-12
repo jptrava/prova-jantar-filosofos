@@ -4,34 +4,7 @@
 
 Este repositório contém múltiplas implementações para o clássico problema de computação concorrente "Jantar dos Filósofos", demonstrando cenários de **Deadlock**, **Prevenção de Deadlock**, **Semáforos** e **Monitores** com prevenção de Starvation.
 
-## 📂 Estrutura do Projeto
 
-Abaixo está a organização dos arquivos fonte (`src`) e documentação:
-
-```text
-/
-├── RELATORIO.md                      # Relatório Comparativo Técnico (Tarefas 2, 3 e 4)
-├── README.md                         # Este arquivo (Documentação Principal)
-│
-├── src/
-│   │   # --- Tarefa 1: Demonstração de Deadlock ---
-│   ├── DiningPhilosophersSimulation.java   # Main: Simulação que trava (Deadlock)
-│   ├── Philosopher.java                    # Thread do Filósofo (Lógica Básica)
-│   │
-│   │   # --- Tarefa 2: Solução Hierarquia de Recursos ---
-│   ├── DiningPhilosophersNoDeadlock.java   # Main: Solução sem Deadlock (Inversão do último)
-│   ├── DiningPhilosophersTest.java         # Teste JUnit para Tarefa 2
-│   │
-│   │   # --- Tarefa 3: Solução com Semáforos ---
-│   ├── DiningPhilosophersSemaphoreSim.java # Main: Solução com limitação de concorrência
-│   ├── PhilosopherSemaphore.java           # Filósofo adaptado para usar Semáforo
-│   ├── DiningPhilosophersSemaphoreTest.java# Teste JUnit para Tarefa 3
-│   │
-│   │   # --- Tarefa 4: Solução com Monitores (Fairness) ---
-│   ├── DiningPhilosophersMonitorSim.java   # Main: Solução Robusta com Monitor
-│   ├── PhilosopherMonitor.java             # Filósofo adaptado para usar Monitor
-│   ├── Mesa.java                           # Monitor Centralizado (Lógica de Fila/Justiça)
-│   └── DiningPhilosophersMonitorTest.java  # Teste JUnit para Tarefa 4
 ## tarefa 1
 # Simulação: Jantar dos Filósofos (Demonstração de Deadlock)
 
@@ -196,4 +169,40 @@ A inovação desta implementação está no método `podeComer(int id)`. Diferen
 ## estatística da execução
 
 <img width="594" height="212" alt="image" src="https://github.com/user-attachments/assets/d4a5ffd1-af77-4884-a737-03c5976b3109" />
+
+👉 **[Clique aqui para abrir o RELATORIO.md](RELATORIO.md)**
+
+## 📂 Estrutura do Projeto
+
+Abaixo está a organização dos arquivos fonte (`src`) e documentação:
+
+```text
+/
+├── RELATORIO.md                      # Relatório Comparativo Técnico (Tarefas 2, 3 e 4)
+├── README.md                         # Este arquivo (Documentação Principal)
+│
+├── src/
+│   │   # --- Tarefa 1: Demonstração de Deadlock ---
+│   ├── DiningPhilosophersSimulation.java   # Main: Simulação que trava (Deadlock)
+│   ├── Philosopher.java                    # Thread do Filósofo (Lógica Básica)
+│   │
+│   │   # --- Tarefa 2: Solução Hierarquia de Recursos ---
+│   ├── DiningPhilosophersNoDeadlock.java   # Main: Solução sem Deadlock (Inversão do último)
+│   ├── DiningPhilosophersTest.java         # Teste JUnit para Tarefa 2
+│   │
+│   │   # --- Tarefa 3: Solução com Semáforos ---
+│   ├── DiningPhilosophersSemaphoreSim.java # Main: Solução com limitação de concorrência
+│   ├── PhilosopherSemaphore.java           # Filósofo adaptado para usar Semáforo
+│   ├── DiningPhilosophersSemaphoreTest.java# Teste JUnit para Tarefa 3
+│   │
+│   │   # --- Tarefa 4: Solução com Monitores (Fairness) ---
+│   ├── DiningPhilosophersMonitorSim.java   # Main: Solução Robusta com Monitor
+│   ├── PhilosopherMonitor.java             # Filósofo adaptado para usar Monitor
+│   ├── Mesa.java                           # Monitor Centralizado (Lógica de Fila/Justiça)
+│   └── DiningPhilosophersMonitorTest.java  # Teste JUnit para Tarefa 4
+
+
+
+
+
 

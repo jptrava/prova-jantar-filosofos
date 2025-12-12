@@ -92,3 +92,45 @@ Para resolver starvation completamente, seria necessário usar `ReentrantLock` c
 
 
 Observa-se uma distribuição razoavelmente uniforme, indicando que o starvation não ocorreu na prática durante o teste.
+
+# Tarefa 3: Solução com Semáforos (Multiplexação)
+
+## Visão Geral
+Esta implementação utiliza a classe `java.util.concurrent.Semaphore` para restringir o número de filósofos que podem tentar adquirir garfos simultaneamente. A regra imposta é que, em uma mesa de 5 lugares, apenas 4 filósofos podem sentar-se ao mesmo tempo.
+
+## Como Funciona
+1.  Foi criado um semáforo global (`diningHall`) com **4 permissões**.
+2.  Antes de tentar pegar qualquer garfo, o filósofo deve chamar `diningHall.acquire()`.
+3.  Se houver permissões disponíveis, ele entra, pega os garfos (sincronizados), come e depois chama `diningHall.release()`.
+4.  Se o semáforo estiver zerado (4 filósofos já sentados), o 5º filósofo é bloqueado e fica esperando na fila do semáforo, mesmo que os garfos à sua frente estejam livres.
+
+## Por que previne Deadlock?
+O deadlock ocorre quando cada filósofo segura um garfo e espera pelo próximo, criando um ciclo.
+Ao limitar o acesso a 4 filósofos (para 5 garfos), garantimos pelo **Princípio da Casa dos Pombos** que, no pior cenário possível:
+* 4 filósofos sentam à mesa.
+* Todos os 4 pegam o garfo à sua esquerda.
+* Ainda sobra 1 garfo na mesa (Total 5 - 4 ocupados = 1 livre).
+* Esse garfo livre necessariamente está à direita de um dos 4 filósofos sentados.
+* Portanto, pelo menos um filósofo conseguirá pegar o segundo garfo, comer e liberar seus recursos, quebrando o ciclo.
+
+## Comparação de Desempenho (Tarefa 2 vs Tarefa 3)
+
+| Métrica | Tarefa 2 (Hierarquia/Inversão) | Tarefa 3 (Semáforo/Garçom) |
+| :--- | :--- | :--- |
+| **Concorrência** | Máxima. Todos os 5 podem tentar pegar garfos. | Limitada. Apenas 4 tentam por vez. |
+| **Complexidade** | Baixa. Apenas lógica `if/else` na inicialização. | Média. Requer objeto extra (`Semaphore`) e gestão de `acquire/release`. |
+| **Vazão (Throughput)** | Tende a ser ligeiramente maior em cenários de baixa contenção. | Pode ser ligeiramente menor, pois o 5º filósofo às vezes espera desnecessariamente (seus garfos poderiam estar livres, mas o "salão" está cheio). |
+| **Fairness (Justiça)** | Depende do SO. Pode haver leve desequilíbrio. | O `Semaphore` do Java (se configurado com `fair=true`) garante ordem FIFO, evitando starvation de forma mais robusta. |
+
+**Dados Observados (Média de 2 min):**
+* **Tarefa 2:** ~118 refeições totais.
+* **Tarefa 3:** ~110 refeições totais.
+* *Conclusão:* A perda de performance pelo overhead do semáforo é mínima e aceitável dada a garantia de robustez.
+
+## Vantagens e Desvantagens
+**Vantagens:**
+* Implementação limpa e simétrica (todos os filósofos executam o mesmo código).
+* Facilidade de ajustar a "carga" do sistema alterando apenas o número de permissões do semáforo.
+
+**Desvantagens:**
+* Reduz artificialmente o paralelismo (um filósofo pode ser bloqueado mesmo se seus dois vizinhos estiverem pensando, apenas porque outros pares distantes estão comendo).
